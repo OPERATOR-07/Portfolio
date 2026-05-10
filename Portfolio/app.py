@@ -7,7 +7,7 @@ from datetime import datetime, date
 
 
 app = Flask(__name__)
-app.secret_key = "artemis-core-contact-form"
+app.secret_key = os.environ.get("SECRET_KEY")
 
 @app.route("/")
 def home():
