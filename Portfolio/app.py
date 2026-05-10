@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request, flash
-import requests
+#import requests
 import sqlite3 as db
 import argon2
 import os
