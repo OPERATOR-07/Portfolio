@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artemis Core — Digital Solutions Studio</title>
+    <meta name="description" content="Artemis Core builds intelligent web systems for modern businesses — from booking engines to analytics dashboards.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #151515;
+            --bg-card-hover: #1e1e1e;
+            --bg-nav: rgba(10, 10, 10, 0.92);
+            --border: #2a2a2a;
+            --border-subtle: #222222;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b0b0b0;
+            --text-tertiary: #7a7a7a;
+            --accent: #f0f0f0;
+            --accent-hover: #ffffff;
+            --button-bg: #f0f0f0;
+            --button-text: #0a0a0a;
+            --button-border: #f0f0f0;
+            --shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.5);
+            --hero-overlay: rgba(10, 10, 10, 0.8);
+            --card-overlay: rgba(10, 10, 10, 0.65);
+            --overlay-bg: rgba(10, 10, 10, 0.92);
+            --nav-height: 68px;
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+            --transition-fast: 0.2s ease;
+            --transition-smooth: 0.35s ease;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --hero-video-scale: 1.20;
+            --hero-video-transition: 0.45s ease;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: var(--nav-height);
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 28px;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 18px; }
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            height: var(--nav-height);
+            background: var(--bg-nav);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .navbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            z-index: 1001;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            position: relative;
+            transition: color var(--transition-fast);
+        }
+
+        /* Underline tied to the visible text width: use an inner span so the underline doesn't include anchor padding */
+        .nav-links a .nav-link-text { position: relative; display: inline-block; }
+        .nav-links a .nav-link-text::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0;
+            height: 2px;
+            bottom: -5px; /* closer to the text */
+            background: var(--text-primary);
+            transform: scaleX(0);
+            transform-origin: left center;
+            transition: transform 0.25s ease;
+            border-radius: 2px;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+            background: none;
+        }
+        
+        .nav-links a:hover .nav-link-text::after { transform: scaleX(1); }
+        
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+        
+        .nav-links a.active .nav-link-text::after { transform: scaleX(1); }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: none;
+            border: 0;
+            font-family: var(--font-sans);
+            cursor: pointer;
+            transition: color var(--transition-fast);
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        .dropdown-toggle:hover .nav-link-text::after {
+            transform: scaleX(1);
+        }
+
+        .dropdown-toggle svg {
+            width: 14px;
+            height: 14px;
+            transition: transform var(--transition-fast);
+        }
+
+        .nav-dropdown:hover .dropdown-toggle svg,
+        .nav-dropdown:focus-within .dropdown-toggle svg {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            left: 0;
+            min-width: 250px;
+            padding: 10px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: rgba(17, 17, 17, 0.98);
+            box-shadow: var(--shadow-hover);
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+            transition: opacity var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .nav-dropdown:hover .dropdown-menu,
+        .nav-dropdown:focus-within .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            width: 100%;
+            padding: 11px 12px;
+            color: var(--text-secondary);
+        }
+
+        .dropdown-menu a:hover {
+            color: var(--text-primary);
+            background: var(--bg-card-hover);
+        }
+
+        .dropdown-menu .nav-link-text::after {
+            display: none;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            background: none;
+            border: none;
+            padding: 6px;
+        }
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: all var(--transition-fast);
+        }
+
+        @media (max-width: 920px) {
+            .hamburger { display: flex; }
+            .nav-links {
+                position: fixed;
+                top: 0; right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: var(--bg-primary);
+                border-left: 1px solid var(--border);
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 100px 24px 40px;
+                gap: 8px;
+                transition: right 0.35s ease;
+                z-index: 999;
+            }
+            .nav-links.active { right: 0; }
+            .nav-links a {
+                font-size: 1rem;
+                padding: 14px 16px;
+                width: 100%;
+            }
+            .nav-links li,
+            .dropdown-toggle {
+                width: 100%;
+            }
+            .dropdown-toggle {
+                justify-content: space-between;
+                font-size: 1rem;
+                padding: 14px 16px;
+            }
+            .dropdown-menu {
+                position: static;
+                min-width: 100%;
+                margin-top: 6px;
+                opacity: 1;
+                transform: none;
+                pointer-events: auto;
+                background: var(--bg-secondary);
+                box-shadow: none;
+            }
+            .mobile-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 998;
+            }
+            .mobile-overlay.active { display: block; }
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: var(--nav-height);
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        /* Video background that fills the hero and is flipped horizontally */
+        .hero video.hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: auto;
+            height: calc(100% * var(--hero-video-scale));
+            min-width: 100%;
+            min-height: 100%;
+            transform: translate(-50%, -50%) scaleX(-1) scale(var(--hero-video-scale));
+            object-fit: cover;
+            z-index: 0;
+            pointer-events: none;
+            transition: transform var(--hero-video-transition), height var(--hero-video-transition);
+        }
+
+        /* Responsive: gradually reduce the video scale as viewport gets narrower so it appears to "zoom out" */
+        @media (max-width: 1200px) {
+            :root { --hero-video-scale: 1.05; }
+        }
+        @media (max-width: 992px) {
+            :root { --hero-video-scale: 0.95; }
+        }
+        @media (max-width: 768px) {
+            :root { --hero-video-scale: 0.85; }
+        }
+        @media (max-width: 560px) {
+            :root { --hero-video-scale: 0.75; }
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--hero-overlay);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 2;
+        }
+        .hero-badge {
+            display: inline-flex;
+            gap: 8px;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+        .hero h1 {
+            font-size: 3.6rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .hero h1 span {
+            text-decoration: underline;
+            text-decoration-thickness: 3px;
+        }
+        .hero .subheadline {
+            font-size: 1.18rem;
+            color: var(--text-secondary);
+            max-width: 560px;
+            margin-bottom: 36px;
+        }
+        .hero-ctas {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 13px 26px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1.5px solid var(--button-border);
+            transition: all var(--transition-smooth);
+            font-family: var(--font-sans);
+            background: transparent;
+            color: var(--text-primary);
+        }
+        .btn-primary {
+            background: var(--button-bg);
+            color: var(--button-text);
+            border: 1.5px solid var(--button-bg);
+        }
+        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
+        .btn-secondary {
+            background: transparent;
+            border: 1.5px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--text-primary); background: var(--bg-card-hover); transform: translateY(-2px); }
+
+        section { padding: 100px 0; }
+        .section-label {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 12px;
+        }
+        .section-title {
+            font-size: 2.6rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        @media (max-width: 1024px) { .services-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .services-grid { grid-template-columns: 1fr; } }
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 32px 26px;
+            transition: all var(--transition-smooth);
+            overflow: hidden;
+        }
+        .service-card a.service-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            width: 100%;
+            height: 100%;
+        }
+        .service-card a.service-link:focus { outline: 3px solid rgba(255,255,255,0.06); outline-offset: 4px; }
+        .service-card .service-icon { transition: transform 0.25s ease; }
+        .service-card:hover .service-icon { transform: translateY(-4px); }
+        .service-card:hover { border-color: var(--border); background: var(--bg-card-hover); box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+        .service-icon { width: 44px; height: 44px; margin-bottom: 18px; color: var(--text-primary); }
+        .service-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
+        .service-card p { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* Solutions carousel */
+        .solutions { background: var(--bg-secondary); }
+        .solutions .section-header { text-align: center; margin-bottom: 48px; }
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .carousel-viewport {
+            width: 100%;
+            max-width: 1100px;
+            overflow: hidden;
+            margin: 0 auto;
+            position: relative;
+        }
+        .carousel-track {
+            display: flex;
+            gap: 24px;
+            transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+            will-change: transform;
+            margin-left: calc(50% - 172px);
+            margin-right: calc(50% - 172px);
+        }
+        .carousel-card {
+            flex: 0 0 320px;
+            height: 320px;
+            border-radius: var(--radius-lg);
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.5s, box-shadow 0.5s;
+            cursor: pointer;
+            transform: scale(0.92);
+            opacity: 0.7;
+        }
+        .carousel-card.center {
+            transform: scale(1.04);
+            opacity: 1;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.5);
+        }
+        .carousel-card .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--card-overlay);
+            z-index: 1;
+        }
+        .carousel-card .card-content {
+            position: relative;
+            z-index: 2;
+            padding: 24px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .carousel-card h3 { font-size: 1.3rem; margin-bottom: 6px; }
+        .carousel-card p { font-size: 0.9rem; color: var(--text-secondary); }
+
+        .carousel-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: background 0.2s;
+            z-index: 10;
+            font-size: 1.3rem;
+        }
+        .carousel-arrow:hover { background: var(--bg-card-hover); border-color: var(--text-primary); }
+        .carousel-arrow.left { left: 5px; }
+        .carousel-arrow.right { right: 5px; }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .carousel-dot.active {
+            background: var(--text-primary);
+            width: 24px;
+            border-radius: 12px;
+        }
+
+        .detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--overlay-bg);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s;
+        }
+        .detail-overlay.active { opacity: 1; pointer-events: auto; }
+        .detail-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .detail-img {
+            width: 100%;
+            height: 300px;
+            background-size: cover;
+            background-position: center;
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            position: relative;
+        }
+        .detail-img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 0%, var(--bg-primary) 95%);
+        }
+        .detail-body { padding: 30px; }
+        .detail-body h2 { font-size: 2rem; margin-bottom: 12px; }
+        .detail-body p { color: var(--text-secondary); font-size: 1.05rem; }
+        .detail-body .detail-intro { margin-bottom: 22px; }
+        .detail-body h3 {
+            font-size: 0.82rem;
+            color: var(--text-tertiary);
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin: 24px 0 10px;
+        }
+        .detail-body ul {
+            display: grid;
+            gap: 10px;
+            padding-left: 20px;
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+        }
+        .detail-body li::marker { color: var(--text-primary); }
+        .close-btn {
+            position: absolute;
+            top: 20px; right: 30px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            font-size: 1.4rem;
+            z-index: 10;
+        }
+
+        .projects-list { display: flex; flex-direction: column; gap: 28px; margin-top: 40px; }
+        .project-card {
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl); padding: 36px 112px 36px 32px; position: relative;
+            transition: all var(--transition-smooth);
+        }
+        .project-card:hover { border-color: var(--border); box-shadow: var(--shadow-hover); background: var(--bg-card-hover); }
+        .project-number {
+            position: absolute; top: 28px; right: 32px;
+            font-size: 4rem; font-weight: 900; color: var(--border-subtle); pointer-events: none;
+        }
+        .project-card h3 { font-size: 1.4rem; margin-bottom: 14px; position: relative; z-index: 1; }
+        .project-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        @media (max-width: 900px) {
+            .project-card { padding: 32px 28px; }
+            .project-number {
+                position: static;
+                display: block;
+                font-size: 2rem;
+                line-height: 1;
+                margin-bottom: 14px;
+                color: var(--text-tertiary);
+            }
+        }
+        @media (max-width: 768px) { .project-details { grid-template-columns: 1fr; } }
+        .project-detail-label { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px; }
+        .project-detail-value { font-size: 0.92rem; color: var(--text-secondary); }
+
+        .process {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+        .process::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(10,10,10,0.69), rgba(10,10,10,0.75)), radial-gradient(circle at 50% 15%, rgba(255,255,255,0.08), transparent 32%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .process-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.5;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .process .container {
+            position: relative;
+            z-index: 2;
+        }
+        .process-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 40px; }
+        @media (max-width: 1100px) { .process-steps { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 680px) { .process-steps { grid-template-columns: 1fr 1fr; } }
+        .process-card {
+            background: rgba(21, 21, 21, 0.58); border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: var(--radius-lg); padding: 28px 22px; text-align: center;
+            transition: all var(--transition-smooth);
+        }
+        .process-card:hover { border-color: rgba(255, 255, 255, 0.2); background: rgba(30, 30, 30, 0.66); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .process-number {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%; background: var(--bg-secondary);
+            font-weight: 700; margin-bottom: 14px;
+        }
+
+        .vision { background: var(--bg-secondary); text-align: center; }
+        .vision blockquote { font-size: 1.5rem; font-weight: 500; max-width: 680px; margin: 0 auto 12px; }
+        .vision .vision-sub { font-size: 1.05rem; color: var(--text-secondary); }
+
+        .about .container { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+        @media (max-width: 768px) { .about .container { grid-template-columns: 1fr; } }
+        .about-text p { font-size: 1.05rem; color: var(--text-secondary); margin-bottom: 16px; }
+
+        .contact { background: var(--bg-secondary); }
+        .contact-form-wrapper {
+            max-width: 560px; margin: 40px auto 0; background: var(--bg-card);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 40px 36px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 13px 16px; background: var(--bg-primary);
+            border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-family: var(--font-sans); font-size: 0.95rem; color: var(--text-primary);
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--text-primary); }
+        .form-notification {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 14px;
+            border: 1px solid rgba(80, 220, 140, 0.45);
+            border-radius: var(--radius-sm);
+            background: rgba(80, 220, 140, 0.12);
+            color: #b9f7cf;
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .form-notification.show { display: block; }
+        .form-notification.error {
+            border-color: rgba(255, 100, 100, 0.45);
+            background: rgba(255, 100, 100, 0.12);
+            color: #ffc2c2;
+        }
+        .contact-links {
+            max-width: 560px;
+            margin: 22px auto 0;
+            text-align: center;
+        }
+        .contact-tagline { font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 16px; }
+        .contact-icons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .contact-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 52px;
+            padding: 12px 14px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), background var(--transition-fast);
+        }
+        .contact-icons a:hover {
+            color: var(--text-primary);
+            border-color: var(--border);
+            background: var(--bg-card-hover);
+            transform: translateY(-2px);
+        }
+        .contact-icons svg { width: 22px; height: 22px; flex: 0 0 auto; }
+        @media (max-width: 560px) { .contact-icons { grid-template-columns: 1fr; } }
+
+        .site-footer {
+            border-top: 1px solid var(--border-subtle); padding: 28px 0;
+            text-align: center; font-size: 0.82rem; color: var(--text-tertiary);
+        }
+
+        .reveal {
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <nav class="navbar" id="navbar">
+        <div class="container">
+            <a href="#home" class="nav-logo">Artemis Core</a>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="active"><span class="nav-link-text">Home</span></a></li>
+                <li class="nav-dropdown">
+                    <button class="dropdown-toggle" type="button">
+                        <span class="nav-link-text">Services</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="services/business-websites"><span class="nav-link-text">Business Websites</span></a>
+                        <a href="services/internal-management-systems"><span class="nav-link-text">Internal Systems</span></a>
+                        <a href="services/custom-web-applications"><span class="nav-link-text">Custom Web Apps</span></a>
+                        <a href="services/automation-solutions"><span class="nav-link-text">Automation Solutions</span></a>
+                    </div>
+                </li>
+                <li><a href="#solutions"><span class="nav-link-text">Solutions</span></a></li>
+                <li><a href="#projects"><span class="nav-link-text">Projects</span></a></li>
+                <li><a href="#process"><span class="nav-link-text">Process</span></a></li>
+                <li><a href="#vision"><span class="nav-link-text">Vision</span></a></li>
+                <li><a href="#about"><span class="nav-link-text">About</span></a></li>
+                <li><a href="#contact"><span class="nav-link-text">Contact</span></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    
+
+    <section class="hero" id="home">
+        <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="https://i.pinimg.com/1200x/3b/0e/43/3b0e43dedc4abd53c38d12bdd8e4202e.jpg" aria-hidden="true">
+            <source src="https://v1.pinimg.com/videos/iht/expMp4/1a/83/a1/1a83a13d9849c82d0eecdd8ff5c82086_720w.mp4" type="video/mp4">
+            <!-- Fallback text -->
+        </video>
+        <div class="container">
+            <div class="hero-badge reveal">Digital Solutions Studio</div>
+            <h1 class="reveal"> <span>Web systems</span> for businesses.</h1>
+            <p class="subheadline reveal">We design and develop web applications, business platforms, and digital tools that turn ideas into scalable systems.</p>
+            <div class="hero-ctas reveal">
+                <a href="#projects" class="btn btn-primary">View Projects</a>
+                <a href="#contact" class="btn btn-secondary">Start a Project</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <div class="reveal"><span class="section-label">Services</span><h2 class="section-title">What we build.</h2></div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <a class="service-link" href="services/business-websites">
+                        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
+                        <h3>Business Websites</h3>
+                        <p>Public-facing websites that build credibility, attract customers, and convert visitors.</p>
+                    </a>
+                </div>
+                <div class="service-card reveal">
+                    <a class="service-link" href="services/internal-management-systems">
+                        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="6" x2="12" y2="12"/></svg></div>
+                        <h3>Internal Management Systems</h3>
+                        <p>Custom admin panels and operational tools that streamline how your team works.</p>
+                    </a>
+                </div>
+                <div class="service-card reveal">
+                    <a class="service-link" href="services/custom-web-applications">
+                        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div>
+                        <h3>Custom Web Applications</h3>
+                        <p>Scalable web platforms engineered around unique workflows, users, and business logic.</p>
+                    </a>
+                </div>
+                <div class="service-card reveal">
+                    <a class="service-link" href="services/automation-solutions">
+                        <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg></div>
+                        <h3>Automation Solutions</h3>
+                        <p>Intelligent integrations and automated pipelines that reduce manual work.</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="solutions" class="solutions">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-label">Business Problems We Solve</span>
+                <h2 class="section-title">Real systems for real needs.</h2>
+            </div>
+        </div>
+
+        <div class="carousel-wrapper reveal" id="carouselWrapper">
+            <button class="carousel-arrow left" id="prevBtn">‹</button>
+            <div class="carousel-viewport">
+                <div class="carousel-track" id="carouselTrack"></div>
+            </div>
+            <button class="carousel-arrow right" id="nextBtn">›</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </section>
+
+    <section id="projects">
+        <div class="container">
+            <div class="reveal"><span class="section-label">Projects</span><h2 class="section-title">Selected work.</h2></div>
+            <div class="projects-list">
+                <div class="project-card reveal"><span class="project-number">01</span><h3>Inventory & Order Management Platform</h3><div class="project-details"><div><div class="project-detail-label">Problem</div><div class="project-detail-value">Retail chain with 12 locations managed stock manually.</div></div><div><div class="project-detail-label">Solution</div><div class="project-detail-value">Centralized dashboard with real‑time sync and alerts.</div></div><div><div class="project-detail-label">Impact</div><div class="project-detail-value">90% fewer errors, order processing down to 3 hours.</div></div></div></div>
+                <div class="project-card reveal"><span class="project-number">02</span><h3>Restaurant Order Management Dashboard</h3><div class="project-details"><div><div class="project-detail-label">Problem</div><div class="project-detail-value">Restaurant staff handled orders manually across calls, counters, and kitchen notes.</div></div><div><div class="project-detail-label">Solution</div><div class="project-detail-value">Digital order system with status tracking, kitchen visibility, and management dashboard.</div></div><div><div class="project-detail-label">Impact</div><div class="project-detail-value">Cleaner order flow, fewer missed items, and faster daily sales review.</div></div></div></div>
+                <div class="project-card reveal"><span class="project-number">03</span><h3>Student Information Management System (SIMS)</h3><div class="project-details"><div><div class="project-detail-label">Problem</div><div class="project-detail-value">Students needed a secure way to register, log in, and access personal information.</div></div><div><div class="project-detail-label">Solution</div><div class="project-detail-value">Student registration, authentication, and personal dashboard for profile and activity access.</div></div><div><div class="project-detail-label">Impact</div><div class="project-detail-value">Improved access control, better student self-service, and organized user records.</div></div></div></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="process">
+        <video class="process-video" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+            <source src="https://v1.pinimg.com/videos/iht/expMp4/d1/60/03/d1600304f93791494b08b2f04eb523e9_720w.mp4" type="video/mp4">
+        </video>
+        <div class="container">
+            <div class="reveal" style="text-align:center;"><span class="section-label">Process</span><h2 class="section-title">How we work.</h2></div>
+            <div class="process-steps">
+                <div class="process-card reveal"><div class="process-number">1</div><h4>Discovery</h4></div>
+                <div class="process-card reveal"><div class="process-number">2</div><h4>System Design</h4></div>
+                <div class="process-card reveal"><div class="process-number">3</div><h4>Development</h4></div>
+                <div class="process-card reveal"><div class="process-number">4</div><h4>Testing</h4></div>
+                <div class="process-card reveal"><div class="process-number">5</div><h4>Deployment</h4></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="vision" class="vision">
+        <div class="container">
+            <span class="section-label reveal">Vision</span>
+            <blockquote class="reveal">Our vision is to simplify how businesses use technology by building systems that are fast, reliable, and intuitive.</blockquote>
+            <p class="vision-sub reveal">We believe software should solve real business problems, not create complexity.</p>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <div class="about-text reveal">
+                <span class="section-label">About</span>
+                <h2 class="section-title">About Artemis Core</h2>
+                <p>Artemis Core builds websites and web applications that are easy to use and reliable. We help businesses solve real problems, from booking systems to dashboards, with clear design and strong system architecture.</p>
+                <p>We create practical tools that make daily work easier. For bigger projects, we work with trusted developers and designers so each project gets the right support.</p>
+            </div>
+            <div class="about-visual reveal">
+                <div style="width:240px;height:240px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:24px;display:flex;align-items:center;justify-content:center;">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="reveal" style="text-align:center;"><span class="section-label">Contact</span><h2 class="section-title">Let's build something that works.</h2></div>
+            <div class="contact-form-wrapper reveal">
+                <form id="contactForm" action="contact" method="post">
+                    <div class="form-group"><label>Name</label><input type="text" placeholder="Your full name" name="name" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" placeholder="your@email.com" name="email" required></div>
+                    <div class="form-group"><label>Project Description</label><textarea rows="5" placeholder="Tell us about what you need..." name="description" required></textarea></div>
+                    <button type="submit" class="btn btn-primary" id="contactSubmitButton" style="width:100%;">Send Message</button>
+                    <div class="form-notification" id="contactNotification" role="status" aria-live="polite"></div>
+                </form>
+            </div>
+
+            <div class="contact-links reveal">
+                <p class="contact-tagline">No pressure. No pitches. Just a conversation.</p>
+                <div class="contact-icons">
+                    <a href="mailto:artemiscore7@gmail.com" aria-label="Email">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 4L12 13 2 4"/></svg>
+                        <span>Email</span>
+                    </a>
+                    <a href="https://linkedin.com/in/operator-seven-5b96a3352" aria-label="LinkedIn">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="#0A66C2" d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.34V8.98h3.42v1.57h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.29ZM5.32 7.41a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.04H3.54V8.98H7.1v11.47ZM22.23 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.21 0 22.23 0Z"/>
+                        </svg>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://wa.me/255764513837" aria-label="WhatsApp">
+                        <svg viewBox="0 0 32 32" aria-hidden="true">
+                            <path fill="#25D366" d="M16.04 2.67c-7.37 0-13.36 5.99-13.36 13.36 0 2.36.62 4.66 1.8 6.69L2.56 29.7l7.16-1.88a13.28 13.28 0 0 0 6.32 1.61h.01c7.37 0 13.36-5.99 13.36-13.36S23.41 2.67 16.04 2.67Z"/>
+                            <path fill="#FFFFFF" d="M23.9 20.19c-.34.95-1.99 1.82-2.78 1.94-.71.11-1.61.16-2.59-.16-.6-.19-1.36-.44-2.34-.86-4.12-1.78-6.8-5.92-7.01-6.2-.2-.27-1.67-2.22-1.67-4.24s1.06-3.01 1.44-3.42c.37-.41.82-.51 1.09-.51h.78c.25.01.59-.1.92.7.34.82 1.15 2.84 1.25 3.05.1.2.17.44.03.71-.14.27-.2.44-.41.68-.2.24-.43.54-.61.72-.2.2-.42.42-.18.83.24.41 1.05 1.73 2.26 2.8 1.55 1.38 2.86 1.81 3.27 2.02.41.2.65.17.89-.1.24-.27 1.03-1.2 1.3-1.61.27-.41.55-.34.92-.2.38.14 2.4 1.13 2.81 1.34.41.2.68.31.78.48.1.17.1.98-.24 1.93Z"/>
+                        </svg>
+                        <span>WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="detail-overlay" id="detailOverlay">
+        <button class="close-btn" id="closeDetailBtn">&times;</button>
+        <div class="detail-card" id="detailCard"></div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">Artemis Core builds intelligent digital systems for modern businesses. &copy; 2026 Artemis Core.</div>
+    </footer>
+
+    <script>
+        (function() {
+            // Mobile menu
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('navLinks');
+            const overlay = document.getElementById('mobileOverlay');
+            function closeMenu() {
+                navLinks.classList.remove('active');
+                hamburger.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            hamburger.addEventListener('click', () => {
+                if (navLinks.classList.contains('active')) closeMenu();
+                else {
+                    navLinks.classList.add('active');
+                    hamburger.classList.add('active');
+                    overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+            overlay.addEventListener('click', closeMenu);
+            document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', closeMenu));
+
+            // Contact form notification
+            const contactForm = document.getElementById('contactForm');
+            const contactSubmitButton = document.getElementById('contactSubmitButton');
+            const contactNotification = document.getElementById('contactNotification');
+            let notificationTimer;
+
+            // Show a short success or error message under the submit button.
+            function showContactNotification(message, type = 'success') {
+                clearTimeout(notificationTimer);
+                contactNotification.textContent = message;
+                contactNotification.classList.toggle('error', type === 'error');
+                contactNotification.classList.add('show');
+
+                notificationTimer = setTimeout(() => {
+                    contactNotification.classList.remove('show');
+                }, 4000);
+            }
+
+            // Send the form without refreshing the page, then show the notification.
+            contactSubmitButton.addEventListener('click', async (event) => {
+                event.preventDefault();
+
+                // Keep the browser's normal required-field and email checks.
+                if (!contactForm.checkValidity()) {
+                    contactForm.reportValidity();
+                    return;
+                }
+
+                contactSubmitButton.disabled = true;
+                contactSubmitButton.textContent = 'Sending...';
+
+                try {
+                    const response = await fetch(contactForm.action, {
+                        method: contactForm.method,
+                        body: new FormData(contactForm)
+                    });
+
+                    if (!response.ok) throw new Error('Contact form request failed');
+
+                    contactForm.reset();
+                    showContactNotification('Message sent successfully.');
+                } catch (error) {
+                    showContactNotification('Sorry, the message could not be sent. Please try again.', 'error');
+                } finally {
+                    contactSubmitButton.disabled = false;
+                    contactSubmitButton.textContent = 'Send Message';
+                }
+            });
+
+            // Active nav
+            const sections = ['home','services','solutions','projects','process','vision','about','contact']
+                .map(id => document.getElementById(id)).filter(Boolean);
+            window.addEventListener('scroll', () => {
+                const scrollPos = window.scrollY + 120;
+                let activeId = 'home';
+                sections.forEach(sec => {
+                    if (scrollPos >= sec.offsetTop && scrollPos < sec.offsetTop + sec.offsetHeight) activeId = sec.id;
+                });
+                document.querySelectorAll('.nav-links a').forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + activeId);
+                });
+            });
+
+            // Reveal
+            const revealObserver = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.12 });
+            document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+            // Carousel data
+            const solutionsData = [
+                {
+                    title: 'Booking / Appointment Systems',
+                    desc: 'Automated scheduling portals that sync across teams and reduce no-shows.',
+                    img: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&auto=format&fit=crop',
+                    overview: 'A booking system gives customers a simple way to reserve time while giving your team a reliable place to manage availability, confirmations, and schedule changes.',
+                    points: [
+                        'Let customers book appointments, consultations, reservations, or service slots online.',
+                        'Manage availability, cancellations, rescheduling, and staff calendars from one dashboard.',
+                        'Send confirmations and reminders to reduce missed appointments and manual follow-up.',
+                        'Useful for clinics, salons, consultants, restaurants, service providers, and appointment-based teams.'
+                    ]
+                },
+                {
+                    title: 'Delivery Tracking Systems',
+                    desc: 'Real-time tracking dashboards for logistics and fleet management.',
+                    img: 'https://images.unsplash.com/photo-1580674285054-bed31e145f59?w=600&auto=format&fit=crop',
+                    overview: 'A delivery tracking system helps businesses follow orders, drivers, routes, and delivery progress with clearer operational visibility.',
+                    points: [
+                        'Track delivery status from dispatch to completion.',
+                        'Give staff and customers clearer updates on where an order stands.',
+                        'Organize drivers, routes, delivery notes, proof of delivery, and delays.',
+                        'Useful for logistics teams, restaurants, retail delivery, courier services, and field operations.'
+                    ]
+                },
+                {
+                    title: 'Order Management Systems',
+                    desc: 'End-to-end order processing and inventory sync to keep operations flowing.',
+                    img: 'https://images.unsplash.com/photo-1553413077-190dd305871c?w=600&auto=format&fit=crop',
+                    overview: 'An order management system centralizes how your business receives, processes, tracks, and completes customer orders.',
+                    points: [
+                        'Manage order status, customer details, items, payment status, and fulfillment steps.',
+                        'Reduce scattered communication by giving teams one shared source of order truth.',
+                        'Connect orders with inventory, notifications, reporting, or delivery workflows.',
+                        'Useful for retail, restaurants, wholesalers, service requests, and operations-heavy businesses.'
+                    ]
+                },
+                {
+                    title: 'Business Analytics Dashboards',
+                    desc: 'Clear visual insights from raw data — sales, KPIs, and performance at a glance.',
+                    img: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop',
+                    overview: 'Analytics dashboards turn raw business data into clear visual information that helps owners and teams make better decisions faster.',
+                    points: [
+                        'Track sales, revenue, customers, performance, inventory, staff output, or operational KPIs.',
+                        'Filter information by date, branch, product, service, team, or customer segment.',
+                        'Replace manual reports with live dashboards and scheduled summaries.',
+                        'Useful for businesses that need clarity on performance, trends, bottlenecks, and growth opportunities.'
+                    ]
+                },
+                {
+                    title: 'CRM Systems',
+                    desc: 'Custom platforms that organize leads, client communication, and follow-ups.',
+                    img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&auto=format&fit=crop',
+                    overview: 'A CRM system helps your business manage leads, customers, conversations, follow-ups, and relationships in one organized workspace.',
+                    points: [
+                        'Store customer profiles, contact details, notes, communication history, and deal stages.',
+                        'Track leads from first inquiry through follow-up, conversion, and retention.',
+                        'Set reminders and statuses so important prospects and clients do not fall through gaps.',
+                        'Useful for sales teams, service businesses, agencies, consultants, and client-focused companies.'
+                    ]
+                },
+                {
+                    title: 'POS Dashboards',
+                    desc: 'Modern, web-based point-of-sale interfaces for retail and hospitality.',
+                    img: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&auto=format&fit=crop',
+                    overview: 'A POS dashboard helps businesses record sales, manage transactions, and understand daily front-office activity from a clean web interface.',
+                    points: [
+                        'Process sales, discounts, payment methods, receipts, and daily totals.',
+                        'Connect sales activity with inventory, staff performance, and reporting.',
+                        'Give managers clearer visibility into branch activity and product movement.',
+                        'Useful for retail shops, restaurants, cafes, salons, and other transaction-based businesses.'
+                    ]
+                }
+            ];
+
+            const track = document.getElementById('carouselTrack');
+            const dotsContainer = document.getElementById('carouselDots');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const wrapper = document.getElementById('carouselWrapper');
+
+            const CARD_WIDTH = 320 + 24;
+            const TOTAL_ORIGINAL = solutionsData.length;
+            const cardsData = [...solutionsData, ...solutionsData.slice(0, 2)];
+            let currentOffset = 0;
+            let autoplayTimer;
+            let isTransitioning = false;
+
+            cardsData.forEach((item) => {
+                const card = document.createElement('div');
+                card.className = 'carousel-card';
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                card.setAttribute('aria-label', `View details for ${item.title}`);
+                card.style.backgroundImage = `url('${item.img}')`;
+                card.innerHTML = `<div class="card-overlay"></div><div class="card-content"><h3>${item.title}</h3><p>${item.desc}</p></div>`;
+                card.addEventListener('click', () => openDetail(item));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openDetail(item);
+                    }
+                });
+                track.appendChild(card);
+            });
+
+            for (let i = 0; i < TOTAL_ORIGINAL; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot';
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            }
+
+            const allCards = document.querySelectorAll('.carousel-card');
+            const dots = document.querySelectorAll('.carousel-dot');
+
+            function updateCarousel(animate = true) {
+                track.style.transition = animate ? 'transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1)' : 'none';
+                const translateX = -currentOffset * CARD_WIDTH;
+                track.style.transform = `translateX(${translateX}px)`;
+
+                allCards.forEach(c => c.classList.remove('center'));
+                const centerIndex = currentOffset;
+                if (allCards[centerIndex]) allCards[centerIndex].classList.add('center');
+
+                const activeDot = ((currentOffset % TOTAL_ORIGINAL) + TOTAL_ORIGINAL) % TOTAL_ORIGINAL;
+                dots.forEach((dot, idx) => dot.classList.toggle('active', idx === activeDot));
+            }
+
+            function goToSlide(index) {
+                if (isTransitioning) return;
+                currentOffset = index;
+                updateCarousel(true);
+                resetAutoplay();
+                isTransitioning = true;
+                setTimeout(() => { isTransitioning = false; }, 700);
+            }
+
+            function nextSlide() {
+                if (isTransitioning) return;
+                currentOffset++;
+                updateCarousel(true);
+                if (currentOffset >= TOTAL_ORIGINAL) {
+                    setTimeout(() => {
+                        track.style.transition = 'none';
+                        currentOffset = currentOffset - TOTAL_ORIGINAL;
+                        updateCarousel(false);
+                        isTransitioning = false;
+                    }, 700);
+                } else {
+                    setTimeout(() => { isTransitioning = false; }, 700);
+                }
+                resetAutoplay();
+                isTransitioning = true;
+            }
+
+            function prevSlide() {
+                if (isTransitioning) return;
+                if (currentOffset <= 0) {
+                    track.style.transition = 'none';
+                    currentOffset = TOTAL_ORIGINAL;
+                    updateCarousel(false);
+                    track.offsetHeight;
+                }
+                currentOffset--;
+                updateCarousel(true);
+                resetAutoplay();
+                isTransitioning = true;
+                setTimeout(() => { isTransitioning = false; }, 700);
+            }
+
+            function startAutoplay() {
+                autoplayTimer = setInterval(nextSlide, 3700);
+            }
+            function resetAutoplay() {
+                clearInterval(autoplayTimer);
+                startAutoplay();
+            }
+
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+            wrapper.addEventListener('mouseenter', () => clearInterval(autoplayTimer));
+            wrapper.addEventListener('mouseleave', startAutoplay);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') prevSlide();
+                if (e.key === 'ArrowRight') nextSlide();
+            });
+
+            updateCarousel(false);
+            startAutoplay();
+
+            // Detail overlay
+            const detailOverlay = document.getElementById('detailOverlay');
+            const detailCard = document.getElementById('detailCard');
+            const closeDetailBtn = document.getElementById('closeDetailBtn');
+
+            function openDetail(item) {
+                const points = (item.points || []).map(point => `<li>${point}</li>`).join('');
+                detailCard.innerHTML = `
+                    <div class="detail-img" style="background-image: url('${item.img}');"></div>
+                    <div class="detail-body">
+                        <h2>${item.title}</h2>
+                        <p class="detail-intro">${item.overview || item.desc}</p>
+                        <h3>What it helps with</h3>
+                        <ul>${points}</ul>
+                    </div>
+                `;
+                detailOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                clearInterval(autoplayTimer);
+            }
+
+            function closeDetail() {
+                detailOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                startAutoplay();
+            }
+
+            closeDetailBtn.addEventListener('click', closeDetail);
+            detailOverlay.addEventListener('click', (e) => {
+                if (e.target === detailOverlay) closeDetail();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && detailOverlay.classList.contains('active')) closeDetail();
+            });
+        })();
+    </script>
+</body>
+</html>

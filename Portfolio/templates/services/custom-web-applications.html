@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Custom Web Applications — Artemis Core</title>
+  <meta name="description" content="Scalable custom web applications engineered around real business workflows.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111111;
+      --bg-card: #151515;
+      --bg-card-hover: #1e1e1e;
+      --bg-nav: rgba(10, 10, 10, 0.92);
+      --border: #2a2a2a;
+      --border-subtle: #222222;
+      --text-primary: #f5f5f5;
+      --text-secondary: #b0b0b0;
+      --text-tertiary: #7a7a7a;
+      --button-bg: #f0f0f0;
+      --button-text: #0a0a0a;
+      --nav-height: 68px;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.5);
+      --transition-fast: 0.2s ease;
+      --transition-smooth: 0.35s ease;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: var(--nav-height); font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body { font-family: var(--font-sans); background: var(--bg-primary); color: var(--text-primary); line-height: 1.6; overflow-x: hidden; }
+    a { color: inherit; }
+    .container { width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 28px; }
+
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      height: var(--nav-height);
+      background: var(--bg-nav);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .navbar .container { display: flex; align-items: center; justify-content: space-between; height: 100%; }
+    .nav-logo { font-weight: 700; font-size: 1.4rem; text-decoration: none; letter-spacing: -0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+    .nav-links a, .dropdown-toggle {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: color var(--transition-fast), background var(--transition-fast);
+      background: none;
+      border: 0;
+      font-family: var(--font-sans);
+      cursor: pointer;
+    }
+    .nav-link-text { position: relative; display: inline-block; }
+    .nav-link-text::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -5px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--text-primary);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform 0.25s ease;
+    }
+    .nav-links a:hover, .dropdown-toggle:hover, .nav-links a.active, .dropdown-toggle.active { color: var(--text-primary); }
+    .nav-links a:hover .nav-link-text::after, .nav-links a.active .nav-link-text::after, .dropdown-toggle.active .nav-link-text::after { transform: scaleX(1); }
+    .nav-dropdown { position: relative; }
+    .dropdown-toggle { display: inline-flex; align-items: center; gap: 6px; }
+    .dropdown-toggle svg { width: 14px; height: 14px; transition: transform var(--transition-fast); }
+    .nav-dropdown:hover .dropdown-toggle svg, .nav-dropdown:focus-within .dropdown-toggle svg { transform: rotate(180deg); }
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 0;
+      min-width: 250px;
+      padding: 10px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: rgba(17, 17, 17, 0.98);
+      box-shadow: var(--shadow-hover);
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+    .nav-dropdown:hover .dropdown-menu, .nav-dropdown:focus-within .dropdown-menu { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .dropdown-menu a { display: block; width: 100%; padding: 11px 12px; color: var(--text-secondary); }
+    .dropdown-menu a:hover, .dropdown-menu a.active { color: var(--text-primary); background: var(--bg-card-hover); }
+    .dropdown-menu .nav-link-text::after { display: none; }
+
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; z-index: 1001; background: none; border: none; padding: 6px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: var(--text-primary); border-radius: 2px; transition: all var(--transition-fast); }
+
+    .hero {
+      min-height: 88vh;
+      display: flex;
+      align-items: center;
+      padding: calc(var(--nav-height) + 80px) 0 90px;
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(90deg, rgba(10,10,10,0.96) 0%, rgba(10,10,10,0.78) 48%, rgba(10,10,10,0.58) 100%), var(--hero-image);
+      background-size: cover;
+      background-position: center;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 18% 25%, rgba(255,255,255,0.08), transparent 26%), linear-gradient(180deg, transparent 65%, var(--bg-primary) 100%);
+      pointer-events: none;
+    }
+    .hero .container { position: relative; z-index: 1; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 15px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      background: rgba(10,10,10,0.35);
+    }
+    .hero h1 { max-width: 820px; font-size: clamp(2.6rem, 7vw, 5.9rem); line-height: 0.98; letter-spacing: -0.055em; font-weight: 900; margin-bottom: 24px; }
+    .hero p { max-width: 640px; color: var(--text-secondary); font-size: clamp(1.02rem, 2vw, 1.22rem); margin-bottom: 36px; }
+    .hero-ctas, .cta-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 48px;
+      padding: 13px 24px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform var(--transition-smooth), background var(--transition-smooth), border-color var(--transition-smooth);
+    }
+    .btn-primary { background: var(--button-bg); color: var(--button-text); border-color: var(--button-bg); }
+    .btn:hover { transform: translateY(-2px); border-color: var(--text-primary); background: var(--bg-card-hover); }
+    .btn-primary:hover { background: #fff; color: var(--button-text); }
+
+    section { padding: 96px 0; }
+    .band { background: var(--bg-secondary); }
+    .section-header { max-width: 720px; margin-bottom: 42px; }
+    .section-label { display: inline-block; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px; }
+    .section-title { font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.08; letter-spacing: -0.035em; font-weight: 850; margin-bottom: 14px; }
+    .section-subtitle { color: var(--text-secondary); font-size: 1.05rem; max-width: 640px; }
+
+    .solution-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .benefit-grid, .faq-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card {
+      position: relative;
+      min-height: 136px;
+      padding: 24px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, rgba(255,255,255,0.025), transparent), var(--bg-card);
+      transition: transform var(--transition-smooth), border-color var(--transition-smooth), background var(--transition-smooth), box-shadow var(--transition-smooth);
+      overflow: hidden;
+    }
+    .card:hover { transform: translateY(-3px); border-color: var(--border); background: var(--bg-card-hover); box-shadow: var(--shadow-hover); }
+    .solution-card { cursor: pointer; }
+    .solution-card:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 4px; }
+    .solution-card::before {
+      content: 'View details';
+      position: absolute;
+      right: 18px;
+      bottom: 16px;
+      color: var(--text-tertiary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity var(--transition-fast), transform var(--transition-fast);
+    }
+    .solution-card:hover::before, .solution-card:focus-visible::before { opacity: 1; transform: translateY(0); }
+    .icon {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 18px;
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.03);
+    }
+    .icon svg { width: 21px; height: 21px; }
+    .card h3 { font-size: 1rem; line-height: 1.28; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .card p, .faq-item p, .narrative p { color: var(--text-secondary); font-size: 0.95rem; }
+    .feature-card { min-height: 116px; }
+    .feature-card h3 { margin-bottom: 0; }
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      top: 24px; right: 24px;
+      width: 7px; height: 7px;
+      border-radius: 999px;
+      background: var(--text-tertiary);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 52px;
+      align-items: center;
+    }
+    .media-panel {
+      min-height: 430px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      background-image: linear-gradient(180deg, rgba(10,10,10,0.1), rgba(10,10,10,0.72)), var(--panel-image);
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+    .narrative {
+      border-left: 1px solid var(--border);
+      padding-left: 30px;
+    }
+    .narrative p { font-size: 1.08rem; margin-bottom: 18px; }
+
+    .faq-item { min-height: 180px; }
+    .faq-item h3 { font-size: 1.05rem; margin-bottom: 10px; }
+    .cta {
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(90deg, rgba(10,10,10,0.96), rgba(10,10,10,0.76)), var(--cta-image);
+      background-size: cover;
+      background-position: center;
+    }
+    .cta .container { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; }
+    .cta h2 { font-size: clamp(2rem, 4vw, 3.4rem); line-height: 1.08; letter-spacing: -0.035em; margin-bottom: 12px; }
+    .cta p { color: var(--text-secondary); max-width: 640px; font-size: 1.05rem; }
+
+    .site-footer { border-top: 1px solid var(--border-subtle); padding: 30px 0; color: var(--text-tertiary); font-size: 0.86rem; }
+    .site-footer .container { display: flex; justify-content: space-between; gap: 18px; align-items: center; }
+
+    .solution-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 2100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(0, 0, 0, 0.72);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-smooth);
+    }
+    .solution-modal.active { opacity: 1; pointer-events: auto; }
+    .solution-dialog {
+      width: min(680px, 100%);
+      max-height: min(720px, 88vh);
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(255,255,255,0.035), transparent), var(--bg-primary);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.62);
+      padding: 34px;
+      transform: translateY(14px) scale(0.98);
+      transition: transform var(--transition-smooth);
+    }
+    .solution-modal.active .solution-dialog { transform: translateY(0) scale(1); }
+    .solution-dialog header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 18px; }
+    .solution-dialog h2 { font-size: clamp(1.7rem, 4vw, 2.55rem); line-height: 1.08; letter-spacing: -0.035em; }
+    .solution-dialog p { color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px; }
+    .solution-dialog ul { display: grid; gap: 12px; padding-left: 20px; color: var(--text-secondary); }
+    .solution-dialog li::marker { color: var(--text-primary); }
+    .modal-close {
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 1.35rem;
+      line-height: 1;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+    }
+    .modal-close:hover { background: var(--bg-card-hover); border-color: var(--text-primary); }
+
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1120px) {
+      .solution-grid, .feature-grid { grid-template-columns: repeat(3, 1fr); }
+      .benefit-grid, .faq-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 920px) {
+      .container { padding: 0 20px; }
+      .hamburger { display: flex; }
+      .nav-links {
+        position: fixed;
+        top: 0; right: -100%;
+        width: min(320px, 84vw);
+        height: 100vh;
+        background: var(--bg-primary);
+        border-left: 1px solid var(--border);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 100px 24px 40px;
+        gap: 8px;
+        transition: right 0.35s ease;
+        z-index: 999;
+        overflow-y: auto;
+      }
+      .nav-links.active { right: 0; }
+      .nav-links li, .nav-links a, .dropdown-toggle { width: 100%; }
+      .dropdown-toggle { justify-content: space-between; }
+      .dropdown-menu {
+        position: static;
+        min-width: 100%;
+        margin-top: 6px;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        background: var(--bg-secondary);
+        box-shadow: none;
+      }
+      .mobile-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 998; }
+      .mobile-overlay.active { display: block; }
+      .split, .cta .container { grid-template-columns: 1fr; }
+      .cta-actions { justify-content: flex-start; }
+    }
+    @media (max-width: 720px) {
+      .hero { min-height: 82vh; padding-bottom: 70px; }
+      section { padding: 72px 0; }
+      .solution-grid, .feature-grid, .benefit-grid, .faq-grid { grid-template-columns: 1fr; }
+      .card, .feature-card, .faq-item { min-height: auto; }
+      .media-panel { min-height: 300px; }
+      .narrative { padding-left: 20px; }
+      .site-footer .container { flex-direction: column; align-items: flex-start; }
+      .solution-modal { padding: 18px; }
+      .solution-dialog { padding: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="/" class="nav-logo">Artemis Core</a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/"><span class="nav-link-text">Home</span></a></li>
+        <li class="nav-dropdown">
+          <button class="dropdown-toggle active" type="button">
+            <span class="nav-link-text">Services</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="dropdown-menu">
+            <a href="/services/business-websites" class=""><span class="nav-link-text">Business Websites</span></a>
+            <a href="/services/internal-management-systems" class=""><span class="nav-link-text">Internal Systems</span></a>
+            <a href="/services/custom-web-applications" class="active"><span class="nav-link-text">Custom Web Apps</span></a>
+            <a href="/services/automation-solutions" class=""><span class="nav-link-text">Automation Solutions</span></a>
+          </div>
+        </li>
+        <li><a href="/#solutions"><span class="nav-link-text">Solutions</span></a></li>
+        <li><a href="/#projects"><span class="nav-link-text">Projects</span></a></li>
+        <li><a href="/#process"><span class="nav-link-text">Process</span></a></li>
+        <li><a href="/#contact"><span class="nav-link-text">Contact</span></a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" style="--hero-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1800&amp;auto=format&amp;fit=crop&amp;q=85');">
+      <div class="container">
+        <div class="eyebrow reveal">Custom Web Applications</div>
+        <h1 class="reveal">Custom Web Applications Built Around Your Workflow</h1>
+        <p class="reveal">Scalable web applications engineered for real business processes.</p>
+        <div class="hero-ctas reveal">
+          <a href="/#contact" class="btn btn-primary">Book Consultation</a>
+          <a href="/#contact" class="btn">Start Your Project</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">Solutions</span>
+          <h2 class="section-title">Advanced software for businesses that need more than a standard website.</h2>
+          <p class="section-subtitle">We create websites and web applications according to each client&#39;s needs, shaped around their business goals, customers, services, and day-to-day workflow.</p>
+        </div>
+        <div class="solution-grid">
+          
+          <article class="card solution-card reveal" tabindex="0" role="button" data-solution="booking">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg>
+            </div>
+            <h3>Booking systems</h3>
+          </article>
+          
+          <article class="card solution-card reveal" tabindex="0" role="button" data-solution="payment">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg>
+            </div>
+            <h3>Payment platforms</h3>
+          </article>
+          
+          <article class="card solution-card reveal" tabindex="0" role="button" data-solution="portal">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg>
+            </div>
+            <h3>Client portals</h3>
+          </article>
+          
+          <article class="card solution-card reveal" tabindex="0" role="button" data-solution="ecommerce">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg>
+            </div>
+            <h3>E-commerce systems</h3>
+          </article>
+          
+          <article class="card solution-card reveal" tabindex="0" role="button" data-solution="platform">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8"/><path d="M8 13h5"/></svg>
+            </div>
+            <h3>Business platforms</h3>
+          </article>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">Features Offered</span>
+          <h2 class="section-title">Built with the practical pieces your business actually needs.</h2>
+        </div>
+        <div class="feature-grid">
+          
+          <article class="card feature-card reveal">
+            <h3>Custom authentication systems</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>API integrations</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Database architecture</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Payment gateways</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>User dashboards</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Real-time updates</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>File uploads</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Reporting systems</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Multi-user systems</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Notifications</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Session handling</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Security implementation</h3>
+          </article>
+          
+          <article class="card feature-card reveal">
+            <h3>Performance optimization</h3>
+          </article>
+          
+        </div>
+      </div>
+    </section>
+
+    
+    <section>
+      <div class="container split">
+        <div class="media-panel reveal" style="--panel-image: url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1600&amp;auto=format&amp;fit=crop&amp;q=85');"></div>
+        <div class="narrative reveal">
+          <span class="section-label">Why Custom</span>
+          <h2 class="section-title">Not every business fits off-the-shelf software.</h2>
+          
+          <p>When your workflow is specific, generic tools force compromises. Custom applications are built around the actual way your business operates.</p>
+          
+          <p>We translate business rules, user roles, data flows, and integrations into software that feels intentional instead of patched together.</p>
+          
+        </div>
+      </div>
+    </section>
+    
+
+    <section class="">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">Outcomes</span>
+          <h2 class="section-title">Software that matches your process instead of bending your process around software.</h2>
+        </div>
+        <div class="benefit-grid">
+          
+          <article class="card reveal">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h3>Support unique workflows</h3>
+          </article>
+          
+          <article class="card reveal">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h3>Scale with users and business complexity</h3>
+          </article>
+          
+          <article class="card reveal">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </div>
+            <h3>Connect systems, data, payments, and teams</h3>
+          </article>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="band">
+      <div class="container">
+        <div class="section-header reveal">
+          <span class="section-label">FAQ</span>
+          <h2 class="section-title">Questions before we build.</h2>
+        </div>
+        <div class="faq-grid">
+          
+          <article class="card faq-item reveal">
+            <h3>Can you build from an idea or rough workflow?</h3>
+            <p>Yes. We can start with discovery, map the process, define user roles, and shape the first build around the highest-value features.</p>
+          </article>
+          
+          <article class="card faq-item reveal">
+            <h3>Can the app integrate with other tools?</h3>
+            <p>Yes. We can connect APIs, payment providers, messaging tools, CRMs, databases, and internal systems where supported.</p>
+          </article>
+          
+          <article class="card faq-item reveal">
+            <h3>Can it grow after launch?</h3>
+            <p>Yes. We structure applications so new modules, dashboards, integrations, and user roles can be added over time.</p>
+          </article>
+          
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" style="--cta-image: url('https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1800&amp;auto=format&amp;fit=crop&amp;q=85');">
+      <div class="container">
+        <div class="reveal">
+          <span class="section-label">Contact</span>
+          <h2>Turn your workflow into a real product.</h2>
+          <p>Build a web application that fits your business logic, users, and growth plans.</p>
+        </div>
+        <div class="cta-actions reveal">
+          <a href="/#contact" class="btn btn-primary">Request Quote</a>
+          <a href="/#contact" class="btn">Book Consultation</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="solution-modal" id="solutionModal" aria-hidden="true">
+    <div class="solution-dialog" role="dialog" aria-modal="true" aria-labelledby="solutionModalTitle">
+      <header>
+        <h2 id="solutionModalTitle"></h2>
+        <button class="modal-close" type="button" aria-label="Close details">&times;</button>
+      </header>
+      <p id="solutionModalDescription"></p>
+      <ul id="solutionModalPoints"></ul>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>Artemis Core builds intelligent digital systems for modern businesses.</span>
+      <span>&copy; 2026 Artemis Core.</span>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      const hamburger = document.getElementById('hamburger');
+      const navLinks = document.getElementById('navLinks');
+      const overlay = document.getElementById('mobileOverlay');
+      function closeMenu() {
+        navLinks.classList.remove('active');
+        hamburger.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+      hamburger.addEventListener('click', () => {
+        if (navLinks.classList.contains('active')) closeMenu();
+        else {
+          navLinks.classList.add('active');
+          hamburger.classList.add('active');
+          overlay.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+      overlay.addEventListener('click', closeMenu);
+      document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', closeMenu));
+
+      const revealObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+      const solutionDetails = {
+        booking: {
+          title: 'Booking Systems',
+          description: 'A custom booking platform designed around how your business accepts appointments, reservations, or scheduled services.',
+          points: [
+            'Availability rules, time slots, customer details, and booking confirmations.',
+            'Admin controls for managing bookings, cancellations, and schedule changes.',
+            'Designed around your actual service flow instead of a generic booking template.'
+          ]
+        },
+        payment: {
+          title: 'Payment Platforms',
+          description: 'A secure payment-enabled web system for businesses that need to collect, track, and manage online transactions.',
+          points: [
+            'Payment gateway integration based on your market and business model.',
+            'Transaction records, customer status, confirmations, and payment history.',
+            'Clear user flows that make payment simple and reduce friction.'
+          ]
+        },
+        portal: {
+          title: 'Client Portals',
+          description: 'A private web portal where your clients can log in, access information, submit requests, and follow progress.',
+          points: [
+            'Client dashboards, files, status updates, forms, and secure account access.',
+            'A cleaner alternative to scattered email threads and manual follow-ups.',
+            'Built according to the information and actions your clients actually need.'
+          ]
+        },
+        ecommerce: {
+          title: 'E-commerce Systems',
+          description: 'A tailored online selling system for products, services, orders, payments, and customer management.',
+          points: [
+            'Product catalogues, cart flows, checkout, payment, and order tracking.',
+            'Admin tools for managing products, customers, stock, and promotions.',
+            'Flexible structure for businesses that need more control than a basic store builder.'
+          ]
+        },
+        platform: {
+          title: 'Business Platforms',
+          description: 'A custom web platform that supports the unique way your business delivers value, manages users, or coordinates operations.',
+          points: [
+            'Custom workflows, dashboards, permissions, data models, and integrations.',
+            'Built around your business goals, customers, and internal process.',
+            'A scalable foundation that can grow into new modules over time.'
+          ]
+        }
+      };
+
+      const solutionModal = document.getElementById('solutionModal');
+      const solutionTitle = document.getElementById('solutionModalTitle');
+      const solutionDescription = document.getElementById('solutionModalDescription');
+      const solutionPoints = document.getElementById('solutionModalPoints');
+      const modalClose = solutionModal.querySelector('.modal-close');
+
+      function openSolutionDetail(key) {
+        const detail = solutionDetails[key];
+        if (!detail) return;
+        solutionTitle.textContent = detail.title;
+        solutionDescription.textContent = detail.description;
+        solutionPoints.innerHTML = '';
+        detail.points.forEach(point => {
+          const li = document.createElement('li');
+          li.textContent = point;
+          solutionPoints.appendChild(li);
+        });
+        solutionModal.classList.add('active');
+        solutionModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        modalClose.focus();
+      }
+
+      function closeSolutionDetail() {
+        solutionModal.classList.remove('active');
+        solutionModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('.solution-card').forEach(card => {
+        card.addEventListener('click', () => openSolutionDetail(card.dataset.solution));
+        card.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openSolutionDetail(card.dataset.solution);
+          }
+        });
+      });
+      modalClose.addEventListener('click', closeSolutionDetail);
+      solutionModal.addEventListener('click', event => {
+        if (event.target === solutionModal) closeSolutionDetail();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && solutionModal.classList.contains('active')) closeSolutionDetail();
+      });
+    })();
+  </script>
+</body>
+</html>
