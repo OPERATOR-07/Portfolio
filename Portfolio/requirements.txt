@@ -1,3 +1,4 @@
 Flask
-SQLAlchemy
 gunicorn
+SQLAlchemy
+argon2-cffi
