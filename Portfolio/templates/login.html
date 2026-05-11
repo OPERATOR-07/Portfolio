@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Artemis Core</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0f1117;
+            color: #e0e4f0;
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            display: grid;
+            place-items: center;
+            padding: 1.5rem;
+        }
+
+        .login-shell {
+            width: min(100%, 440px);
+            background: #161a22;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+            padding: 2rem;
+        }
+
+        .login-mark {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: #252b38;
+            color: #7c8aff;
+            display: grid;
+            place-items: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.4rem;
+        }
+
+        h1 {
+            font-size: 1.85rem;
+            font-weight: 600;
+            color: #f0f3fa;
+            margin-bottom: 0.45rem;
+        }
+
+        .subtitle {
+            color: #9aa1b9;
+            font-size: 0.95rem;
+            margin-bottom: 1.6rem;
+            line-height: 1.5;
+        }
+
+        .flash {
+            background: rgba(161, 69, 75, 0.16);
+            border: 1px solid rgba(209, 96, 106, 0.35);
+            color: #ffd7db;
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.1rem;
+            font-size: 0.9rem;
+        }
+
+        form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .input-group {
+            display: grid;
+            gap: 0.45rem;
+        }
+
+        label {
+            color: #b9c2da;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            background: #1e212b;
+            border: 1px solid #353b4b;
+            border-radius: 12px;
+            color: #eef1fc;
+            padding: 0.85rem 1rem;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #7480cc;
+            box-shadow: 0 0 0 3px rgba(116, 128, 204, 0.2);
+        }
+
+        button {
+            border: 1px solid #5f73a0;
+            background: #4f6188;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            transition: 0.2s;
+            margin-top: 0.35rem;
+        }
+
+        button:hover {
+            background: #5f73a0;
+        }
+
+        @media (max-width: 520px) {
+            body {
+                padding: 1rem;
+            }
+
+            .login-shell {
+                padding: 1.4rem;
+                border-radius: 16px;
+            }
+
+            h1 {
+                font-size: 1.55rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="login-shell">
+        <div class="login-mark" aria-hidden="true">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>Admin Login</h1>
+        <p class="subtitle">Sign in to manage messages and admin accounts.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('admin_login') }}">
+            <div class="input-group">
+                <label for="username">Username or Email</label>
+                <input id="username" name="username" type="text" autocomplete="username" required autofocus>
+            </div>
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required>
+            </div>
+            <button type="submit">
+                <i class="fas fa-sign-in-alt"></i>
+                Sign In
+            </button>
+        </form>
+    </main>
+</body>
+
+</html>

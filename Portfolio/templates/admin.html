@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Admin Panel | Dark Dashboard</title>
+    <!-- Font Awesome 6 for clean icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0f1117;
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            color: #e0e4f0;
+            padding: 2rem 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            width: 100%;
+            background: #161a22;
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            backdrop-filter: blur(2px);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2.2rem;
+            border-bottom: 1px solid #2a2f3d;
+            padding-bottom: 1.2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #f0f3fa;
+            min-width: 0;
+        }
+
+        h1 i {
+            color: #7c8aff;
+            font-size: 2rem;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: #1e212b;
+            padding: 0.4rem;
+            border-radius: 3rem;
+            width: fit-content;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #9aa1b9;
+            font-weight: 500;
+            padding: 0.7rem 1.8rem;
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            letter-spacing: 0.3px;
+        }
+
+        .tab-btn i {
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            background: #2e3440;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            font-weight: 500;
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: #cdd6f0;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .panel {
+            background: #1a1e28;
+            border-radius: 1.5rem;
+            padding: 1.8rem;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            margin-bottom: 0.5rem;
+        }
+
+        /* ----- DIV-BASED TABLE REPLACEMENT ----- */
+        .div-table {
+            display: flex;
+            flex-direction: column;
+            border-radius: 1rem;
+            margin-top: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .div-table-header {
+            display: flex;
+            background: #232836;
+            border-radius: 0.75rem 0.75rem 0 0;
+            padding: 0;
+            font-weight: 500;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #b9c2da;
+            border-bottom: 1px solid #2f3542;
+        }
+
+        .div-row {
+            display: flex;
+            align-items: stretch;
+            border-bottom: 1px solid #252a36;
+            transition: background 0.15s;
+        }
+
+        .div-row:last-child {
+            border-bottom: none;
+            border-radius: 0 0 0.75rem 0.75rem;
+        }
+
+        .div-row:hover .div-cell {
+            background: #212632;
+        }
+
+        .div-cell {
+            padding: 0.9rem 1rem;
+            display: flex;
+            align-items: center;
+            color: #d3d9e9;
+            font-size: 0.9rem;
+            min-width: 0;
+            background: #1a1e28;
+        }
+
+        .div-header-cell {
+            padding: 0.9rem 1rem;
+            display: flex;
+            align-items: center;
+            background: #232836;
+            font-weight: 500;
+        }
+
+        /* Column widths matching previous table */
+        .col-id {
+            width: 60px;
+            flex-shrink: 0;
+        }
+
+        .col-name {
+            flex: 1.2;
+            min-width: 140px;
+        }
+
+        .col-email {
+            flex: 1.5;
+            min-width: 180px;
+        }
+
+        .col-desc {
+            flex: 1.5;
+            min-width: 160px;
+        }
+
+        .col-timestamp {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .col-actions {
+            width: 100px;
+            flex-shrink: 0;
+            justify-content: flex-start;
+        }
+
+        .col-username {
+            flex: 1.2;
+            min-width: 140px;
+        }
+
+        .col-password {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: #2a2f3d;
+            border: none;
+            color: #cfd5e6;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .icon-btn:hover {
+            background: #3e4457;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #4f5b8c;
+        }
+
+        .delete-btn:hover {
+            background: #a1454b;
+        }
+
+        .save-btn:hover {
+            background: #3c6e4f;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 0.8rem;
+            margin-bottom: 1.8rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .input-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #8f99bb;
+            font-weight: 500;
+        }
+
+        input,
+        .editable-field {
+            background: #1e212b;
+            border: 1px solid #353b4b;
+            border-radius: 10px;
+            padding: 0.65rem 1rem;
+            color: #eef1fc;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.2s;
+            min-width: 160px;
+        }
+
+        input:focus {
+            border-color: #7480cc;
+            box-shadow: 0 0 0 3px rgba(116, 128, 204, 0.2);
+        }
+
+        .primary-btn {
+            background: #4f6188;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 500;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #5f73a0;
+            letter-spacing: 0.3px;
+        }
+
+        .primary-btn:hover {
+            background: #5f73a0;
+        }
+
+        .logout-form {
+            flex-shrink: 0;
+        }
+
+        .logout-btn {
+            background: #2a2f3d;
+            border: 1px solid #3b4356;
+            color: #cfd5e6;
+            min-height: 40px;
+            border-radius: 10px;
+            padding: 0 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn:hover {
+            background: #3e4457;
+            color: white;
+        }
+
+        .inline-edit-input {
+            background: #252b38;
+            border: 1px solid #4b5470;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            color: white;
+            width: 100%;
+            max-width: 140px;
+        }
+
+        .badge {
+            background: #2a3140;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: #b4c2f0;
+        }
+
+        .timestamp {
+            color: #919bb5;
+            font-size: 0.8rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 1rem;
+            }
+
+            .admin-container {
+                padding: 1.5rem;
+            }
+
+            .admin-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>
+                <i class="fas fa-shield-alt"></i>
+                Dark Admin Panel
+            </h1>
+            <form class="logout-form" method="post" action="/operator/logout">
+                <button class="logout-btn" type="submit">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </form>
+        </div>
+
+        <!-- Tab navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" id="tabEmailsBtn"><i class="fas fa-envelope"></i> Emails</button>
+            <button class="tab-btn" id="tabAdminBtn"><i class="fas fa-user-shield"></i> Admin Users</button>
+        </div>
+
+        <!-- EMAILS PANEL -->
+        <div id="emailsPanel" class="panel">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <h3 style="font-weight: 400; font-size: 1.2rem;"><i class="fas fa-list-alt"
+                        style="margin-right: 0.5rem; color: #7c8aff;"></i>Email Records</h3>
+                <button class="primary-btn" id="addEmailBtn"><i class="fas fa-plus-circle"></i> Add Email</button>
+            </div>
+
+            <!-- Add new email form (hidden by default) -->
+            <div id="newEmailForm" class="form-row hidden"
+                style="margin-top: 1.2rem; background: #1f232e; padding: 1rem; border-radius: 1rem;">
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="newEmailName" placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="newEmailAddress" placeholder="john@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Description</label>
+                    <input type="text" id="newEmailDesc" placeholder="Description">
+                </div>
+                <button class="primary-btn" id="saveNewEmailBtn" style="align-self: flex-end;"><i
+                        class="fas fa-save"></i>
+                    Save</button>
+                <button class="icon-btn" id="cancelNewEmailBtn" style="align-self: flex-end; background: #3a3040;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+            <!-- DIV-BASED EMAILS TABLE -->
+            <div class="div-table" id="emailsTableContainer">
+                <div class="div-table-header">
+                    <div class="div-header-cell col-id">ID</div>
+                    <div class="div-header-cell col-name">Name</div>
+                    <div class="div-header-cell col-email">Email</div>
+                    <div class="div-header-cell col-desc">Description</div>
+                    <div class="div-header-cell col-timestamp">Timestamp</div>
+                    <div class="div-header-cell col-actions">Actions</div>
+                </div>
+                <div id="emailsList"></div>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL (hidden initially) -->
+        <div id="adminPanel" class="panel hidden">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <h3 style="font-weight: 400; font-size: 1.2rem;"><i class="fas fa-user-cog"
+                        style="margin-right: 0.5rem; color: #7c8aff;"></i>Admin Accounts</h3>
+                <button class="primary-btn" id="addAdminBtn"><i class="fas fa-plus-circle"></i> Add Admin</button>
+            </div>
+
+            <div id="newAdminForm" class="form-row hidden"
+                style="margin-top: 1.2rem; background: #1f232e; padding: 1rem; border-radius: 1rem;">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="newAdminUsername" placeholder="admin_user">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="newAdminEmail" placeholder="admin@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="newAdminPassword" placeholder="password">
+                </div>
+                <button class="primary-btn" id="saveNewAdminBtn" style="align-self: flex-end;"><i
+                        class="fas fa-save"></i>
+                    Save</button>
+                <button class="icon-btn" id="cancelNewAdminBtn" style="align-self: flex-end; background: #3a3040;"><i
+                        class="fas fa-times"></i></button>
+            </div>
+
+
+            <!-- DIV-BASED ADMIN TABLE -->
+            <div class="div-table" id="adminTableContainer">
+                <div class="div-table-header">
+                    <div class="div-header-cell col-id">ID</div>
+                    <div class="div-header-cell col-username">Username</div>
+                    <div class="div-header-cell col-email">Email</div>
+                    <div class="div-header-cell col-password">Password</div>
+                    <div class="div-header-cell col-actions">Actions</div>
+                </div>
+                <div id="adminsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const DB = {
+                emails: [],
+                admins: []
+            };
+
+            async function apiRequest(url, options = {}) {
+                const response = await fetch(url, {
+                    ...options,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(options.headers || {})
+                    }
+                });
+                const data = await response.json().catch(() => ({}));
+                if (response.status === 401) {
+                    window.location.href = '/operator/login';
+                    throw new Error('Authentication required.');
+                }
+                if (!response.ok) {
+                    throw new Error(data.error || 'Something went wrong.');
+                }
+                return data;
+            }
+
+            async function fetchUsers() {
+                return apiRequest('/fetch-user', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: 'get-users' })
+                });
+            }
+
+            async function fetchAdmins() {
+                return apiRequest('/fetch-admin', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: 'get-admin' })
+                });
+            }
+
+            async function loadData() {
+                try {
+                    const [emails, admins] = await Promise.all([fetchUsers(), fetchAdmins()]);
+                    DB.emails = emails;
+                    DB.admins = admins;
+                    renderEmails();
+                    renderAdmins();
+                } catch (error) {
+                    alert(`ERROR: ${error.message}`);
+                }
+            }
+
+            // State for editing
+            let editingEmailId = null;
+            let editingAdminId = null;
+
+            // DOM Elements
+            const emailsPanel = document.getElementById('emailsPanel');
+            const adminPanel = document.getElementById('adminPanel');
+            const tabEmailsBtn = document.getElementById('tabEmailsBtn');
+            const tabAdminBtn = document.getElementById('tabAdminBtn');
+
+            const emailsList = document.getElementById('emailsList');
+            const adminsList = document.getElementById('adminsList');
+
+            // Forms & buttons
+            const newEmailForm = document.getElementById('newEmailForm');
+            const addEmailBtn = document.getElementById('addEmailBtn');
+            const cancelNewEmailBtn = document.getElementById('cancelNewEmailBtn');
+            const saveNewEmailBtn = document.getElementById('saveNewEmailBtn');
+            const newEmailName = document.getElementById('newEmailName');
+            const newEmailAddress = document.getElementById('newEmailAddress');
+            const newEmailDesc = document.getElementById('newEmailDesc');
+
+            const newAdminForm = document.getElementById('newAdminForm');
+            const addAdminBtn = document.getElementById('addAdminBtn');
+            const cancelNewAdminBtn = document.getElementById('cancelNewAdminBtn');
+            const saveNewAdminBtn = document.getElementById('saveNewAdminBtn');
+            const newAdminUsername = document.getElementById('newAdminUsername');
+            const newAdminEmail = document.getElementById('newAdminEmail');
+            const newAdminPassword = document.getElementById('newAdminPassword');
+
+            // ---------- TAB SWITCHING ----------
+            function showEmailsTab() {
+                emailsPanel.classList.remove('hidden');
+                adminPanel.classList.add('hidden');
+                tabEmailsBtn.classList.add('active');
+                tabAdminBtn.classList.remove('active');
+            }
+
+            function showAdminTab() {
+                adminPanel.classList.remove('hidden');
+                emailsPanel.classList.add('hidden');
+                tabAdminBtn.classList.add('active');
+                tabEmailsBtn.classList.remove('active');
+            }
+
+            tabEmailsBtn.addEventListener('click', showEmailsTab);
+            tabAdminBtn.addEventListener('click', showAdminTab);
+
+            // ---------- RENDER FUNCTIONS (DIV-BASED) ----------
+            function renderEmails() {
+                if (!emailsList) return;
+                emailsList.innerHTML = '';
+                DB.emails.forEach(email => {
+                    const row = document.createElement('div');
+                    row.className = 'div-row';
+                    row.setAttribute('data-email-id', email.id);
+
+                    // ID
+                    const idCell = document.createElement('div');
+                    idCell.className = 'div-cell col-id';
+                    idCell.textContent = email.id;
+                    row.appendChild(idCell);
+
+                    // Name
+                    const nameCell = document.createElement('div');
+                    nameCell.className = 'div-cell col-name';
+                    if (editingEmailId === email.id) {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = email.name;
+                        input.className = 'inline-edit-input';
+                        input.setAttribute('data-field', 'name');
+                        nameCell.appendChild(input);
+                    } else {
+                        nameCell.textContent = email.name;
+                    }
+                    row.appendChild(nameCell);
+
+                    // Email
+                    const emailCell = document.createElement('div');
+                    emailCell.className = 'div-cell col-email';
+                    if (editingEmailId === email.id) {
+                        const input = document.createElement('input');
+                        input.type = 'email';
+                        input.value = email.email;
+                        input.className = 'inline-edit-input';
+                        input.setAttribute('data-field', 'email');
+                        emailCell.appendChild(input);
+                    } else {
+                        emailCell.textContent = email.email;
+                    }
+                    row.appendChild(emailCell);
+
+                    // Description
+                    const descCell = document.createElement('div');
+                    descCell.className = 'div-cell col-desc';
+                    if (editingEmailId === email.id) {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = email.description;
+                        input.className = 'inline-edit-input';
+                        input.setAttribute('data-field', 'description');
+                        descCell.appendChild(input);
+                    } else {
+                        descCell.textContent = email.description;
+                    }
+                    row.appendChild(descCell);
+
+                    // Timestamp
+                    const timeCell = document.createElement('div');
+                    timeCell.className = 'div-cell col-timestamp timestamp';
+                    timeCell.textContent = email.timestamp;
+                    row.appendChild(timeCell);
+
+                    // Actions
+                    const actionsCell = document.createElement('div');
+                    actionsCell.className = 'div-cell col-actions';
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'action-btns';
+
+                    if (editingEmailId === email.id) {
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'icon-btn save-btn';
+                        saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+                        saveBtn.title = 'Save';
+                        saveBtn.addEventListener('click', (e) => saveEmailEdit(email.id, row));
+
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'icon-btn';
+                        cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        cancelBtn.title = 'Cancel';
+                        cancelBtn.addEventListener('click', () => {
+                            editingEmailId = null;
+                            renderEmails();
+                        });
+
+                        actionsDiv.appendChild(saveBtn);
+                        actionsDiv.appendChild(cancelBtn);
+                    } else {
+                        const editBtn = document.createElement('button');
+                        editBtn.className = 'icon-btn edit-btn';
+                        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+                        editBtn.title = 'Edit';
+                        editBtn.addEventListener('click', () => {
+                            editingEmailId = email.id;
+                            renderEmails();
+                        });
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'icon-btn delete-btn';
+                        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                        deleteBtn.title = 'Delete';
+                        deleteBtn.addEventListener('click', () => deleteEmail(email.id));
+
+                        actionsDiv.appendChild(editBtn);
+                        actionsDiv.appendChild(deleteBtn);
+                    }
+                    actionsCell.appendChild(actionsDiv);
+                    row.appendChild(actionsCell);
+
+                    emailsList.appendChild(row);
+                });
+            }
+
+            async function saveEmailEdit(id, row) {
+                const emailRecord = DB.emails.find(e => e.id === id);
+                if (!emailRecord) return;
+
+                const inputs = row.querySelectorAll('input.inline-edit-input');
+                const newData = {};
+                inputs.forEach(input => {
+                    const field = input.getAttribute('data-field');
+                    if (field) newData[field] = input.value.trim();
+                });
+
+                if (newData.name === '' || newData.email === '') {
+                    alert('Name and email cannot be empty.');
+                    return;
+                }
+
+                try {
+                    const updatedEmail = await apiRequest(`/emails/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({
+                            name: newData.name,
+                            email: newData.email,
+                            description: newData.description || ''
+                        })
+                    });
+                    DB.emails = DB.emails.map(email => email.id === id ? updatedEmail : email);
+                    editingEmailId = null;
+                    renderEmails();
+                } catch (error) {
+                    alert(`ERROR: ${error.message}`);
+                }
+            }
+
+            async function deleteEmail(id) {
+                if (confirm('Delete this email record?')) {
+                    try {
+                        await apiRequest(`/emails/${id}`, { method: 'DELETE' });
+                        DB.emails = DB.emails.filter(e => e.id !== id);
+                        if (editingEmailId === id) editingEmailId = null;
+                        renderEmails();
+                    } catch (error) {
+                        alert(`ERROR: ${error.message}`);
+                    }
+                }
+            }
+
+            async function addNewEmail() {
+                const name = newEmailName.value.trim();
+                const email = newEmailAddress.value.trim();
+                const desc = newEmailDesc.value.trim();
+                if (!name || !email) {
+                    alert('Name and Email are required.');
+                    return;
+                }
+                try {
+                    const newEmail = await apiRequest('/emails', {
+                        method: 'POST',
+                        body: JSON.stringify({ name, email, description: desc })
+                    });
+                    DB.emails.push(newEmail);
+                    newEmailName.value = '';
+                    newEmailAddress.value = '';
+                    newEmailDesc.value = '';
+                    newEmailForm.classList.add('hidden');
+                    renderEmails();
+                } catch (error) {
+                    alert(`ERROR: ${error.message}`);
+                }
+            }
+
+            // ---------- ADMIN RENDERING (DIV-BASED) ----------
+            function renderAdmins() {
+                if (!adminsList) return;
+                adminsList.innerHTML = '';
+                DB.admins.forEach(admin => {
+                    const row = document.createElement('div');
+                    row.className = 'div-row';
+                    row.setAttribute('data-admin-id', admin.id);
+
+                    const idCell = document.createElement('div');
+                    idCell.className = 'div-cell col-id';
+                    idCell.textContent = admin.id;
+                    row.appendChild(idCell);
+
+                    const usernameCell = document.createElement('div');
+                    usernameCell.className = 'div-cell col-username';
+                    if (editingAdminId === admin.id) {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.value = admin.username;
+                        input.className = 'inline-edit-input';
+                        input.setAttribute('data-field', 'username');
+                        usernameCell.appendChild(input);
+                    } else {
+                        usernameCell.textContent = admin.username;
+                    }
+                    row.appendChild(usernameCell);
+
+                    const emailCell = document.createElement('div');
+                    emailCell.className = 'div-cell col-email';
+                    if (editingAdminId === admin.id) {
+                        const input = document.createElement('input');
+                        input.type = 'email';
+                        input.value = admin.email;
+                        input.className = 'inline-edit-input';
+                        input.setAttribute('data-field', 'email');
+                        emailCell.appendChild(input);
+                    } else {
+                        emailCell.textContent = admin.email;
+                    }
+                    row.appendChild(emailCell);
+
+                    const passCell = document.createElement('div');
+                    passCell.className = 'div-cell col-password';
+                    if (editingAdminId === admin.id) {
+                        const input = document.createElement('input');
+                        input.type = 'password';
+                        input.value = '';
+                        input.placeholder = 'Leave blank to keep';
+                        input.className = 'inline-edit-input';
+                        input.setAttribute('data-field', 'password');
+                        passCell.appendChild(input);
+                    } else {
+                        passCell.textContent = '••••••••';
+                    }
+                    row.appendChild(passCell);
+
+                    const actionsCell = document.createElement('div');
+                    actionsCell.className = 'div-cell col-actions';
+                    const actionsDiv = document.createElement('div');
+                    actionsDiv.className = 'action-btns';
+
+                    if (editingAdminId === admin.id) {
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'icon-btn save-btn';
+                        saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+                        saveBtn.addEventListener('click', (e) => saveAdminEdit(admin.id, row));
+
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'icon-btn';
+                        cancelBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        cancelBtn.addEventListener('click', () => {
+                            editingAdminId = null;
+                            renderAdmins();
+                        });
+                        actionsDiv.appendChild(saveBtn);
+                        actionsDiv.appendChild(cancelBtn);
+                    } else {
+                        const editBtn = document.createElement('button');
+                        editBtn.className = 'icon-btn edit-btn';
+                        editBtn.innerHTML = '<i class="fas fa-pen"></i>';
+                        editBtn.addEventListener('click', () => {
+                            editingAdminId = admin.id;
+                            renderAdmins();
+                        });
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'icon-btn delete-btn';
+                        deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                        deleteBtn.addEventListener('click', () => deleteAdmin(admin.id));
+
+                        actionsDiv.appendChild(editBtn);
+                        actionsDiv.appendChild(deleteBtn);
+                    }
+                    actionsCell.appendChild(actionsDiv);
+                    row.appendChild(actionsCell);
+
+                    adminsList.appendChild(row);
+                });
+            }
+
+            async function saveAdminEdit(id, row) {
+                const admin = DB.admins.find(a => a.id === id);
+                if (!admin) return;
+                const inputs = row.querySelectorAll('input.inline-edit-input');
+                const newData = {};
+                inputs.forEach(input => {
+                    const field = input.getAttribute('data-field');
+                    if (field) newData[field] = input.value.trim();
+                });
+                if (!newData.username || !newData.email) {
+                    alert('Username and email are required for admin.');
+                    return;
+                }
+                try {
+                    const updatedAdmin = await apiRequest(`/admins/${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(newData)
+                    });
+                    DB.admins = DB.admins.map(admin => admin.id === id ? updatedAdmin : admin);
+                    editingAdminId = null;
+                    renderAdmins();
+                } catch (error) {
+                    alert(`ERROR: ${error.message}`);
+                }
+            }
+
+            async function deleteAdmin(id) {
+                if (confirm('Remove this admin account?')) {
+                    try {
+                        await apiRequest(`/admins/${id}`, { method: 'DELETE' });
+                        DB.admins = DB.admins.filter(a => a.id !== id);
+                        if (editingAdminId === id) editingAdminId = null;
+                        renderAdmins();
+                    } catch (error) {
+                        alert(`ERROR: ${error.message}`);
+                    }
+                }
+            }
+
+            async function addNewAdmin() {
+                const username = newAdminUsername.value.trim();
+                const email = newAdminEmail.value.trim();
+                const password = newAdminPassword.value.trim();
+                if (!username || !email || !password) {
+                    alert('All fields required.');
+                    return;
+                }
+                try {
+                    const newAdmin = await apiRequest('/admins', {
+                        method: 'POST',
+                        body: JSON.stringify({ username, email, password })
+                    });
+                    DB.admins.push(newAdmin);
+                    newAdminUsername.value = '';
+                    newAdminEmail.value = '';
+                    newAdminPassword.value = '';
+                    newAdminForm.classList.add('hidden');
+                    renderAdmins();
+                } catch (error) {
+                    alert(`ERROR: ${error.message}`);
+                }
+            }
+
+            // ---------- EVENT LISTENERS FOR ADD FORMS ----------
+            addEmailBtn.addEventListener('click', () => {
+                newEmailForm.classList.remove('hidden');
+            });
+            cancelNewEmailBtn.addEventListener('click', () => {
+                newEmailForm.classList.add('hidden');
+                newEmailName.value = '';
+                newEmailAddress.value = '';
+                newEmailDesc.value = '';
+            });
+            saveNewEmailBtn.addEventListener('click', addNewEmail);
+
+            addAdminBtn.addEventListener('click', () => {
+                newAdminForm.classList.remove('hidden');
+            });
+            cancelNewAdminBtn.addEventListener('click', () => {
+                newAdminForm.classList.add('hidden');
+                newAdminUsername.value = '';
+                newAdminEmail.value = '';
+                newAdminPassword.value = '';
+            });
+            saveNewAdminBtn.addEventListener('click', addNewAdmin);
+
+            loadData();
+        })();
+    </script>
+</body>
+
+</html>
